@@ -1,0 +1,8 @@
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\Lab1\bin\Release\Lab1.exe.config
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\Lab1\bin\Release\Lab1.exe
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\Lab1\bin\Release\Lab1.pdb
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\Lab1\obj\Release\Lab1.exe
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\Lab1\obj\Release\Lab1.pdb
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\Lab1\bin\Release\LibraryForLab1.dll
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\Lab1\bin\Release\LibraryForLab1.pdb
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\Lab1\obj\Release\Lab1.csprojResolveAssemblyReference.cache

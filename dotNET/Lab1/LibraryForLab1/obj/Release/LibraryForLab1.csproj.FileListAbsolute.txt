@@ -1,0 +1,5 @@
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\LibraryForLab1\bin\Release\LibraryForLab1.dll
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\LibraryForLab1\bin\Release\LibraryForLab1.pdb
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\LibraryForLab1\obj\Release\LibraryForLab1.csprojResolveAssemblyReference.cache
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\LibraryForLab1\obj\Release\LibraryForLab1.dll
+C:\Users\Petricioiu\Documents\develop\facultate\dotNET\Lab1\LibraryForLab1\obj\Release\LibraryForLab1.pdb
