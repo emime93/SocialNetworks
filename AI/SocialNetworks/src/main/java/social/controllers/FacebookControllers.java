@@ -8,6 +8,7 @@ package social.controllers;
 import facebook4j.Facebook;
 import facebook4j.FacebookException;
 import facebook4j.FacebookFactory;
+import facebook4j.auth.AccessToken;
 import facebook4j.internal.http.HttpRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -29,12 +30,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class FacebookControllers {
 
     private Facebook facebook;
-    
+
     @RequestMapping(value = "/facebook/signin", method = RequestMethod.GET)
-    public String signIn(HttpServletRequest request, HttpServletResponse response, Model model) throws FacebookException {
+    public String signIn(HttpServletRequest request, HttpServletResponse response, Model model) throws FacebookException, IOException {
         
         facebook = new FacebookFactory().getInstance();
-        model.addAttribute("facebook", facebook);
+        request.getSession().setAttribute("facebook", facebook);
         
         StringBuffer callbackURL = request.getRequestURL();
         int index = callbackURL.lastIndexOf("/");
@@ -44,7 +45,8 @@ public class FacebookControllers {
     }
     
     @RequestMapping(value = "/facebook/callback", method = RequestMethod.GET)
-    public String callbackFacebook(HttpServletRequest request, Model model) throws ServletException, IOException {
+    public String callbackFacebook(HttpServletRequest request, Model model, HttpServletResponse response) throws ServletException, IOException {
+       
         String oauthCode = request.getParameter("code");
         try {
             facebook.getOAuthAccessToken(oauthCode);
@@ -52,5 +54,6 @@ public class FacebookControllers {
             throw new ServletException(e);
         }
         return "redirect:/welcome";
+                
     }
 }
