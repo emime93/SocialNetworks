@@ -5,6 +5,8 @@
  */
 package social.controllers;
 
+import entities.User;
+import entities.UserDetailsServiceImpl;
 import facebook4j.Facebook;
 import facebook4j.FacebookException;
 import facebook4j.FacebookFactory;
@@ -17,6 +19,12 @@ import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,15 +52,27 @@ public class FacebookControllers {
         
     }
     
+    @Autowired
+    @Qualifier("User")
+    User user;
+    
     @RequestMapping(value = "/facebook/callback", method = RequestMethod.GET)
     public String callbackFacebook(HttpServletRequest request, Model model, HttpServletResponse response) throws ServletException, IOException {
        
         String oauthCode = request.getParameter("code");
         try {
             facebook.getOAuthAccessToken(oauthCode);
+            UserDetailsServiceImpl userDetailsServiceImpl = new UserDetailsServiceImpl();
+            UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(facebook.getId());
+            Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            user.setUsername(facebook.getName());
+            request.getSession().setAttribute("utilizator", user);
+            
         } catch (FacebookException e) {
             throw new ServletException(e);
         }
+        
         return "redirect:/welcome";
                 
     }

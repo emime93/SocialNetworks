@@ -28,6 +28,7 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.gson.Gson;
 import static com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.REDIRECT_URI;
+import entities.UserDetailsServiceImpl;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,6 +40,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -88,15 +94,20 @@ public class GoogleSocialControllers {
         String code = new String(resultStream.toByteArray(), "UTF-8");
 
         try {
-            
+
             google.setCode(code);
             google.connect();
- 
+
+            UserDetailsServiceImpl userDetailsServiceImpl = new UserDetailsServiceImpl();
+            UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(google.getUserEmail());
+            Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
             // Store the token in the session for later use.
             request.getSession().setAttribute("token", google.getTokenResponse().toString());
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().print(google.getGSON().toJson("Successfully connected user."));
-            
+
         } catch (TokenResponseException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().print(google.getGSON().toJson("Failed to upgrade the authorization code."));
@@ -109,42 +120,45 @@ public class GoogleSocialControllers {
         return "main/index";
     }
 
-    /*  @RequestMapping(method = RequestMethod.POST, value = "/welcome/disconnect/google")
-     public void disconnectGoogle(HttpServletRequest request, HttpServletResponse response) throws IOException {
-     response.setContentType("application/json");
+    @RequestMapping(method = RequestMethod.GET, value = "/disconnect/google")
+    public String disconnectGoogle(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
 
-     // Only disconnect a connected user.
-     String tokenData = (String) request.getSession().getAttribute("token");
-     if (tokenData == null) {
-     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-     response.getWriter().print(GSON.toJson("Current user not connected."));
-     return;
-     }
-     try {
-     // Build credential from stored token data.
-     GoogleCredential credential = new GoogleCredential.Builder()
-     .setJsonFactory(JSON_FACTORY)
-     .setTransport(TRANSPORT)
-     .setClientSecrets(CLIENT_ID, CLIENT_SECRET).build()
-     .setFromTokenResponse(JSON_FACTORY.fromString(
-     tokenData, GoogleTokenResponse.class));
-     // Execute HTTP GET request to revoke current token.
-     HttpResponse revokeResponse = TRANSPORT.createRequestFactory()
-     .buildGetRequest(new GenericUrl(
-     String.format(
-     "https://accounts.google.com/o/oauth2/revoke?token=%s",
-     credential.getAccessToken()))).execute();
-     // Reset the user's session.
-     request.getSession().removeAttribute("token");
-     response.setStatus(HttpServletResponse.SC_OK);
-     response.getWriter().print(GSON.toJson("Successfully disconnected."));
-     } catch (IOException e) {
-     // For whatever reason, the given token was invalid.
-     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-     response.getWriter().print(GSON.toJson("Failed to revoke token for given user."));
-     }
-     }
-     */
+        // Only disconnect a connected user.
+        String tokenData = (String) request.getSession().getAttribute("token");
+        if (tokenData == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().print(google.getGSON().toJson("Current user not connected."));
+            return "redirect:/j_spring_security_logout";
+        }
+        
+        try {
+            // Build credential from stored token data.
+            GoogleCredential credential = new GoogleCredential.Builder()
+                    .setJsonFactory(google.getJSON_FACTORY())
+                    .setTransport(google.getTRANSPORT())
+                    .setClientSecrets(google.getCLIENT_ID(), google.getCLIENT_SECRET()).build()
+                    .setFromTokenResponse(google.getJSON_FACTORY().fromString(
+                                    tokenData, GoogleTokenResponse.class));
+            // Execute HTTP GET request to revoke current token.
+            HttpResponse revokeResponse = google.getTRANSPORT().createRequestFactory()
+                    .buildGetRequest(new GenericUrl(
+                                    String.format(
+                                            "https://accounts.google.com/o/oauth2/revoke?token=%s",
+                                            credential.getAccessToken()))).execute();
+            // Reset the user's session.
+            request.getSession().removeAttribute("token");
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().print(google.getGSON().toJson("Successfully disconnected."));
+        } catch (IOException e) {
+            // For whatever reason, the given token was invalid.
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().print(google.getGSON().toJson("Failed to revoke token for given user."));
+        }
+        
+        return "redirect:/j_spring_security_logout";
+    }
+
     static void getContent(InputStream inputStream, ByteArrayOutputStream outputStream)
             throws IOException {
         // Read the response into a buffered stream

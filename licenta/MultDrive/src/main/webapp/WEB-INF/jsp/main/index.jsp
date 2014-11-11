@@ -26,27 +26,47 @@
         <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/bootstrap-social.css" />" />
         <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/bootstrap.css" />" />
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/forms.css" />" />
     </head>
     <body>
 
-        <h1>Hello ${facebook.name}</h1>
-        <h2>${facebook.id}</h2>
-        <a class="btn btn-social btn-facebook" href="<c:url value="/facebook/signin" />">
-            <i class="fa fa-facebook"></i> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sign in with Facebook
-        </a>
-        <div id="gConnect">
-            <button class="g-signin"
-                    data-scope="https://www.googleapis.com/auth/plus.login"
-                    data-requestvisibleactions="http://schemas.google.com/AddActivity"
-                    data-clientId="{{ CLIENT_ID }}"
-                    data-accesstype="offline"
-                    data-callback="signInCallback"
-                    data-theme="dark"
-                    data-cookiepolicy="single_host_origin">
-            </button>
+        <div class="sign-in-form">
+            <div class="sign-in-form-header"></div>
+            <div class="sign-in-form-general">
+                <form method="POST" action="<c:url value="/j_spring_security_check" />"> 
+                    <table>   
+                        <tr>     
+                            <td align="right">Username</td>     
+                            <td><input type="text" name="j_username" /></td>   
+                        </tr>   <tr>     <td align="right">Password</td>     
+                            <td><input type="password" name="j_password" /></td>   
+                        </tr> <tr>     <td align="right">Remember me</td>     
+                            <td><input type="checkbox" name="_spring_security_remember_me" /></td>   
+                        </tr>   <tr>     <td colspan="2" align="right">       
+                                <input type="submit" value="Login" />       
+                                <input type="reset" value="Reset" />     
+                            </td>   
+                        </tr> 
+                    </table> 
+                </form>
+            </div>
+            <div class="sign-in-form-footer">
+                <a class="btn btn-social btn-facebook" href="<c:url value="/facebook/signin" />">
+                    <i class="fa fa-facebook"></i> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sign in with Facebook
+                </a>
+                <div id="gConnect">
+                    <button class="g-signin"
+                            data-scope="https://www.googleapis.com/auth/plus.login"
+                            data-requestvisibleactions="http://schemas.google.com/AddActivity"
+                            data-clientId="{{ CLIENT_ID }}"
+                            data-accesstype="offline"
+                            data-callback="signInCallback"
+                            data-theme="dark"
+                            data-cookiepolicy="single_host_origin">
+                    </button>
+                </div>
+            </div>
         </div>
-
-        <h1> Utilizator: ${utilizator.username} </h1>
         <div id="authOps" style="display:none">
             <h2>User is now signed in to the app using Google+</h2>
             <p>If the user chooses to disconnect, the app must delete all stored

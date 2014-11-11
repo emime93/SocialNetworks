@@ -20,6 +20,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -85,6 +88,16 @@ public class MainController {
         String states1 = (String) request.getSession().getAttribute("STATE");
         request.getSession().setAttribute("APPLICATION_NAME", APPLICATION_NAME);
         response.setStatus(HttpServletResponse.SC_OK);
+        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth instanceof AnonymousAuthenticationToken)) {
+            return "redirect:/drive";
+        }
         return "main/index";
+    }
+    
+    @RequestMapping(value = "/drive", method = RequestMethod.GET)
+    public String drive() {
+        return "drive/drive";
     }
 }

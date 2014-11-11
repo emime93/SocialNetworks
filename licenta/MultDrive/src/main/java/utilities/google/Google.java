@@ -5,6 +5,7 @@
  */
 package utilities.google;
 
+import com.google.api.client.auth.openidconnect.IdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -43,7 +44,7 @@ public class Google implements Serializable{
     }
     
     public String getUserEmail() throws IOException {
-        return credential.getServiceAccountUser();
+        return tokenResponse.parseIdToken().getPayload().getSubject();
     }
 
     /*
@@ -180,8 +181,15 @@ public class Google implements Serializable{
     public void connect() throws IOException {
         tokenResponse = new GoogleAuthorizationCodeTokenRequest(TRANSPORT, JSON_FACTORY,
                 CLIENT_ID, CLIENT_SECRET, code, "postmessage").execute();
-
-        setCredential(new GoogleCredential().setFromTokenResponse(tokenResponse));
+        
+        GoogleCredential credential = new GoogleCredential.Builder()
+        .setJsonFactory(JSON_FACTORY)
+        .setTransport(TRANSPORT)
+        .setClientSecrets(CLIENT_ID, CLIENT_SECRET).build()
+        .setFromTokenResponse(tokenResponse);
+        
+        setCredential(credential);
+        
         setDrive(new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build());
     }
 

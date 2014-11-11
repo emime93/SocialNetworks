@@ -8,6 +8,7 @@
             /WEB-INF/applicationContext.xml
             /WEB-INF/multdrive-service.xml
             /WEB-INF/multdrive-servlet.xml
+            /WEB-INF/multdrive-security.xml
         </param-value>
     </context-param>  
     
