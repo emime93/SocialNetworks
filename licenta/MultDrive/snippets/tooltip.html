@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>tooltip example</title>
+	<link rel="stylesheet" href="tooltip.css">
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script type="text/javascript" charset="utf-8" async defer>
+	function showPopup(trigger) {
+			var triggerPos = $(trigger).position();
+			var width = $(trigger).width();
+			var height = 65;
+			var newLeft = triggerPos.left + width;
+			var newTop;
+
+			var tooltipWidth = $(".tooltip-wraper").width();
+			if (triggerPos.left - width + tooltipWidth > $(window).width())
+				newLeft = triggerPos.left - width - tooltipWidth;
+
+			$(".tooltip-wraper").css("top", triggerPos.top + height + "px");
+			$(".tooltip-wraper").css("left", newLeft + "px");
+		}
+	$(document).ready(function() {
+		
+	});
+	</script>
+</head>
+<body>
+	<div class="tooltip-wraper">
+		<div class="arrow-up"></div>
+	</div>
+	<a href="#" style="background-color:#000;position:absolute;top:200px;left:200px;" onclick="showPopup(this);">click me</a>
+	<a href="#" style="background-color:#000;position:absolute;top:50%;left:90%;" onclick="showPopup(this);">click me</a>
+	
+</body>
+</html>
